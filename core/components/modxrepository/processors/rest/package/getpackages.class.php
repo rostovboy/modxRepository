@@ -1,20 +1,24 @@
 <?php
+
 /*
  * Получаем массив всех пакетов
  */
-class modxRepositoryGetPackagesClass  extends modxRepositoryProcessor{
-    
+
+class modxRepositoryGetPackagesClass extends modxRepositoryProcessor
+{
+
     var $TVs = array();
-    
-    function process(){
-        
+
+    function process()
+    {
+
         /*
          * Получаем ID TV-шек
          */
-        
+
         $this->getTVs();
-        
-        if($this->hasErrors()){
+
+        if ($this->hasErrors()) {
             return false;
         }
         $where = (array)$this->properties['where'];
@@ -23,9 +27,10 @@ class modxRepositoryGetPackagesClass  extends modxRepositoryProcessor{
         $sort = (array)$this->properties['sort'];
         return $this->getData($where, $limit, $group, $sort);
     }
-    
-    
-    function getTVs(){
+
+
+    function getTVs()
+    {
         // Получаем ID TV-шек
         $TVsNames = array(
             'object_id',
@@ -40,37 +45,39 @@ class modxRepositoryGetPackagesClass  extends modxRepositoryProcessor{
             'file',
             'downloads',
         );
-        
-        
-        if(!$result = $this->modx->getCollection('modTemplateVar', array(
-            'name:IN'   => $TVsNames,
-        ))){
+
+
+        if (!$result = $this->modx->getCollection('modTemplateVar', array(
+            'name:IN' => $TVsNames,
+        ))
+        ) {
             return $this->failure('Не были получены TV-параметры');
         }
-        
-        foreach($result as $r){
+
+        foreach ($result as $r) {
             $this->TVs[$r->name] = $r->id;
         }
         return $this->TVs;
     }
-    
-    function getData($where = array(), $limit = 0, $group = array(), $sort = array()){
+
+    function getData($where = array(), $limit = 0, $group = array(), $sort = array())
+    {
         /*
          * Get repositories IDs
          */
         $parents = array();
-        
-        if($this->getProperty('root')){
+
+        if ($this->getProperty('root')) {
             $response = $this->runProcessor('repository/getrepositories', $this->getProperties());
-            if(!$repositories = $response->getResponse()){
+            if (!$repositories = $response->getResponse()) {
                 $this->failure('Failure get repositories');
                 return false;
             }
-            foreach($repositories  as $r){
+            foreach ($repositories as $r) {
                 $parents[] = $r->id;
             }
         }
-        
+
         $q = $this->modx->newQuery('modResource');
         $q->innerJoin('modTemplateVarResource', 'object_id', "object_id.contentid = modResource.id");
         $q->innerJoin('modResource', 'r', 'r.parent = modResource.id');
@@ -78,25 +85,25 @@ class modxRepositoryGetPackagesClass  extends modxRepositoryProcessor{
         $q->innerJoin('modTemplateVarResource', '`release`', "`release`.contentid = r.id");
         $q->innerJoin('modTemplateVarResource', '`file`', "`file`.contentid = r.id");
         $q->innerJoin('modUser', '`user`', "`user`.id = r.createdby");
-        
-        $q->leftJoin('modTemplateVarResource', 'vrelease_index', 
-                "vrelease_index.contentid = r.id AND vrelease_index.tmplvarid  = ". $this->TVs['vrelease_index']);
-        $q->leftJoin('modTemplateVarResource', 'r_description', 
-                "r_description.contentid = r.id AND r_description.tmplvarid  = ". $this->TVs['r_description']);
-        $q->leftJoin('modTemplateVarResource', 'instructions', 
-                "instructions.contentid = r.id AND instructions.tmplvarid  = ". $this->TVs['instructions']);
-        $q->leftJoin('modTemplateVarResource', 'changelog', 
-                "changelog.contentid = r.id AND changelog.tmplvarid  = ". $this->TVs['changelog']);
-        
-        $q->leftJoin('modTemplateVarResource', 'version_major', 
-                "version_major.contentid = r.id AND version_major.tmplvarid = ". $this->TVs['version_major']);
-        $q->leftJoin('modTemplateVarResource', 'version_minor', 
-                "version_minor.contentid = r.id AND version_minor.tmplvarid = ". $this->TVs['version_minor']);
-        $q->leftJoin('modTemplateVarResource', 'version_patch', 
-                "version_patch.contentid = r.id AND version_patch.tmplvarid = ". $this->TVs['version_patch']);
-        $q->leftJoin('modTemplateVarResource', 'downloads', 
-                "downloads.contentid = r.id AND downloads.tmplvarid = ". $this->TVs['downloads']);
-        
+
+        $q->leftJoin('modTemplateVarResource', 'vrelease_index',
+            "vrelease_index.contentid = r.id AND vrelease_index.tmplvarid  = " . $this->TVs['vrelease_index']);
+        $q->leftJoin('modTemplateVarResource', 'r_description',
+            "r_description.contentid = r.id AND r_description.tmplvarid  = " . $this->TVs['r_description']);
+        $q->leftJoin('modTemplateVarResource', 'instructions',
+            "instructions.contentid = r.id AND instructions.tmplvarid  = " . $this->TVs['instructions']);
+        $q->leftJoin('modTemplateVarResource', 'changelog',
+            "changelog.contentid = r.id AND changelog.tmplvarid  = " . $this->TVs['changelog']);
+
+        $q->leftJoin('modTemplateVarResource', 'version_major',
+            "version_major.contentid = r.id AND version_major.tmplvarid = " . $this->TVs['version_major']);
+        $q->leftJoin('modTemplateVarResource', 'version_minor',
+            "version_minor.contentid = r.id AND version_minor.tmplvarid = " . $this->TVs['version_minor']);
+        $q->leftJoin('modTemplateVarResource', 'version_patch',
+            "version_patch.contentid = r.id AND version_patch.tmplvarid = " . $this->TVs['version_patch']);
+        $q->leftJoin('modTemplateVarResource', 'downloads',
+            "downloads.contentid = r.id AND downloads.tmplvarid = " . $this->TVs['downloads']);
+
         $q->select(array(
             'modResource.*',
             'modResource.id as package_id',
@@ -121,76 +128,76 @@ class modxRepositoryGetPackagesClass  extends modxRepositoryProcessor{
             'file.id as file_id',
             'downloads.value as downloads',
         ));
-        
-        
+
+
         $where = array_merge(array(
-            'modResource.published' =>  1,
-            'modResource.deleted'   => 0,
-            'modResource.hidemenu'  => 0,
-            'r.published' =>  1,
-            'r.deleted'   => 0,
-            'r.hidemenu'  => 0,
-            'object_id.tmplvarid'  => $this->TVs['object_id'],
-            'r_object_id.tmplvarid'  => $this->TVs['object_id'],
-            '`release`.tmplvarid'  => $this->TVs['release'],
-            'file.tmplvarid'  => $this->TVs['file'],
-        ), $where );
-        
-        if($parents){
-            $where['modResource.parent:IN'] =  $parents;
+            'modResource.published' => 1,
+            'modResource.deleted' => 0,
+            'modResource.hidemenu' => 0,
+            'r.published' => 1,
+            'r.deleted' => 0,
+            'r.hidemenu' => 0,
+            'object_id.tmplvarid' => $this->TVs['object_id'],
+            'r_object_id.tmplvarid' => $this->TVs['object_id'],
+            '`release`.tmplvarid' => $this->TVs['release'],
+            'file.tmplvarid' => $this->TVs['file'],
+        ), $where);
+
+        if ($parents) {
+            $where['modResource.parent:IN'] = $parents;
         }
-        
+
         $q->where($where);
         $q->limit($limit);
-        
-        if($sort){
-            foreach($sort as $s){
-                $arr = explode(",",  $s);
+
+        if ($sort) {
+            foreach ($sort as $s) {
+                $arr = explode(",", $s);
                 $by = trim($arr[0]);
-                if(!$dir = trim($arr[1])){
+                if (!$dir = trim($arr[1])) {
                     $dir = 'ASC';
                 }
                 $q->sortby($by, $dir);
             }
         }
-        
+
         $q->prepare();
-        
-        
+
+
         // Группируем результат
-        if($group = (array)$group){
+        if ($group = (array)$group) {
             $sql = $q->toSQL();
-        
+
             $sql = "SELECT * from ({$sql}) AS t";
-            $sql .= " group by ". implode(", ", $group);
-            
-            if($sort){
+            $sql .= " group by " . implode(", ", $group);
+
+            if ($sort) {
                 $order_arr = array();
-                foreach($sort as $s){
-                    $arr = explode(",",  $s);
+                foreach ($sort as $s) {
+                    $arr = explode(",", $s);
                     $by = trim($arr[0]);
-                    if(!$dir = trim($arr[1])){
+                    if (!$dir = trim($arr[1])) {
                         $dir = 'ASC';
                     }
                     // remove aliases
                     $by_arr = explode('.', $by);
-                    if($by_arr[1]){
+                    if ($by_arr[1]) {
                         $by = $by_arr[1];
                     }
                     $order_arr[] = "t.{$by} {$dir}";
                 }
-                $sql .= " ORDER BY ". implode(", ", $order_arr);
+                $sql .= " ORDER BY " . implode(", ", $order_arr);
             }
-            
+
             $q->stmt = $this->modx->prepare($sql);
             //package_id
         }
-        
-        if(!$q->stmt->execute() OR !$result = $q->stmt->fetchAll(PDO::FETCH_ASSOC)){
+
+        if (!$q->stmt->execute() OR !$result = $q->stmt->fetchAll(PDO::FETCH_ASSOC)) {
             $this->failure("Не были получены пакеты");
             return false;
         }
-        
+
         return $result;
     }
 }

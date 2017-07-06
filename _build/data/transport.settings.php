@@ -7,7 +7,7 @@
  * http://community.modx-cms.ru/profile/Fi1osof/
  * http://modxstore.ru
  */
-global  $modx, $sources;
+global $modx, $sources;
 $settings = array();
 
 $settings['modxRepository.handler_doc_id'] = $modx->newObject('modSystemSetting');
@@ -17,7 +17,7 @@ $settings['modxRepository.handler_doc_id']->fromArray(array(
     'xtype' => 'textfield',
     'namespace' => 'modxrepository',
     'area' => 'site',
-),'',true,true);
+), '', true, true);
 
 
 $settings['modxRepository.request_path'] = $modx->newObject('modSystemSetting');
@@ -27,7 +27,7 @@ $settings['modxRepository.request_path']->fromArray(array(
     'xtype' => 'textfield',
     'namespace' => 'modxrepository',
     'area' => 'site',
-),'',true,true);
+), '', true, true);
 
- 
+
 return $settings;

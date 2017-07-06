@@ -32,13 +32,13 @@ $params = array(
 $mediaSource = $modx->newObject('sources.modMediaSource', array(
     'name' => 'Repository Packages',
     'class_key' => 'sources.modFileMediaSource',
-    'description'   => 'Source for Repository packages',
+    'description' => 'Source for Repository packages',
     'properties' => $params,
 ));
 
 $mediaSources[] = $mediaSource;
- 
+
 
 return $mediaSources;
-        
+
 ?>
