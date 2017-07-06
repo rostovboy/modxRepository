@@ -25,7 +25,7 @@ define('PKG_PATH', PKG_NAME_LOWER);
 define('PKG_CATEGORY', PKG_NAME);
 
 $pkg_version = '1.2.3';
-$pkg_release = 'beta';
+$pkg_release = 'beta2';
 define('PKG_VERSION', $pkg_version);
 define('PKG_RELEASE', $pkg_release);
 

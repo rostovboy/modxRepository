@@ -1,3 +1,9 @@
+modxRepository-1.2.3-beta2
+=============================================================
+1.  Reformatted code
+2.  Added downloads TV
+3.  Fixed create packages directory in assets
+
 modxRepository-1.2.3-beta
 =============================================================
 1.  modxRepositoryProcessor::__construct bugfix

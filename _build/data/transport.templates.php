@@ -125,6 +125,15 @@ $TemplateVar = $modx->newObject('modTemplateVar', array(
 $result[] = $TemplateVar;
 
 $TemplateVar = $modx->newObject('modTemplateVar', array(
+    'name' => 'downloads',
+    'caption' => 'Downloads',
+    'description' => '',
+    'type' => 'number',
+    'rank' => 75,
+));
+$result[] = $TemplateVar;
+
+$TemplateVar = $modx->newObject('modTemplateVar', array(
     'name' => 'file',
     'caption' => 'Package file',
     'description' => '',
