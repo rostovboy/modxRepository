@@ -53,7 +53,6 @@ class modxRepositoryPackagePrepareRow extends modProcessor
             'license' => '',
             'smf_url' => '',
             'repository' => '',
-            'supports' => '',
             'supports' => '2.0',
             'location' => $this->modx->getOption('site_url') . $this->modx->getOption('modxRepository.request_path') . "download/?id={$data['release_id']}",
             'signature' => $data['release_name'],
